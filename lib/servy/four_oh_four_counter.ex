@@ -49,6 +49,10 @@ defmodule Servy.FourOhFourCounter do
     Servy.FourOhFourGenericServer.call(@name, {:path_not_found, path})
   end
 
+  def get_counts do
+    Servy.FourOhFourGenericServer.call(@name, :get_counts)
+  end
+
   def handle_call({:path_not_found, path}, state) do
     new_state = Map.update(state, path, 1, fn current_count -> current_count + 1 end)
     {new_state, new_state}
@@ -59,8 +63,7 @@ defmodule Servy.FourOhFourCounter do
     {count, state}
   end
 
-  def get_counts do
-    count = Servy.FourOhFourGenericServer.call(@name, :get_count)
-    count
+  def handle_call(:get_counts, state) do
+    {state, state}
   end
 end
