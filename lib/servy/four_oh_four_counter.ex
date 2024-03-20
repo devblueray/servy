@@ -40,16 +40,20 @@ defmodule Servy.FourOhFourCounter do
   def start do
     Servy.FourOhFourGenericServer.start(__MODULE__, %{}, @name)
   end
+
   def get_count(path) do
     Servy.FourOhFourGenericServer.call(@name, {:get_count, path})
   end
+
   def bump_count(path) do
     Servy.FourOhFourGenericServer.call(@name, {:path_not_found, path})
   end
+
   def handle_call({:path_not_found, path}, state) do
     new_state = Map.update(state, path, 1, fn current_count -> current_count + 1 end)
     {new_state, new_state}
   end
+
   def handle_call({:get_count, path}, state) do
     count = Map.fetch(state, path)
     {count, state}
