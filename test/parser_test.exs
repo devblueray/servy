@@ -8,6 +8,5 @@ defmodule ParserTest do
     headers = Parser.parse_headers(header_lines, %{})
 
     assert headers == %{"A" => "1", "B" => "2"}
-
   end
 end

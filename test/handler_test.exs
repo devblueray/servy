@@ -15,12 +15,12 @@ defmodule HandlerTest do
     response = handle(request)
 
     assert response == """
-    HTTP/1.1 200 OK\r
-    Content-Type: text/html\r
-    Content-Length: 20\r
-    \r
-    Bears, Lions, Tigers
-    """
+           HTTP/1.1 200 OK\r
+           Content-Type: text/html\r
+           Content-Length: 20\r
+           \r
+           Bears, Lions, Tigers
+           """
   end
 
   test "GET /api/bears" do
@@ -54,10 +54,7 @@ defmodule HandlerTest do
     assert remove_whitespace(response) == remove_whitespace(expected_response)
   end
 
-
   defp remove_whitespace(text) do
     String.replace(text, ~r{\s}, "")
   end
 end
-
-

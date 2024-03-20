@@ -1,0 +1,7 @@
+<h1>Recent Pledges</h1>
+
+<ul>
+<%= for {name, amount} <- pledges do %>
+<li><%= "#{String.upcase(name)} - $#{amount}" %></li>
+<% end %>
+</ul>

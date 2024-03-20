@@ -4,6 +4,7 @@ defmodule Servy.Handler do
   alias Servy.Conv
   alias Servy.BearController
   alias Servy.VideoCam
+  alias Servy.FourOhFourCounter, as: Counter
 
   @moduledoc """
     Handles HTTP request.
@@ -34,6 +35,10 @@ defmodule Servy.Handler do
     %Conv{conv | status: 500, resp_body: reason}
   end
 
+  def route(%Conv{method: "GET", path: "/pledges/new"} = conv) do
+    Servy.PledgeController.new(conv)
+  end
+
   def route(%Conv{method: "POST", path: "/pledges"} = conv) do
     Servy.PledgeController.create(conv, conv.params)
   end
@@ -41,6 +46,7 @@ defmodule Servy.Handler do
   def route(%Conv{method: "GET", path: "/pledges"} = conv) do
     Servy.PledgeController.index(conv)
   end
+
   def route(%Conv{method: "GET", path: "/sensors"} = conv) do
     snapshots =
       ["cam-1", "cam-2", "cam-3"]
@@ -49,7 +55,6 @@ defmodule Servy.Handler do
 
     task = Task.async(fn -> Servy.Tracker.get_location("bigfoot") end)
     where_is_bigfoot = Task.await(task)
-
 
     %Conv{conv | status: 200, resp_body: inspect({snapshots, where_is_bigfoot})}
   end
@@ -91,7 +96,14 @@ defmodule Servy.Handler do
     BearController.create(conv, conv.params)
   end
 
-  def route(%Conv{path: path} = conv), do: %{conv | status: 404, resp_body: "No #{path} here!"}
+  def route(%Conv{method: "GET", path: "/404s"} = conv) do
+    %Conv{conv | status: 200, resp_body: inspect(Counter.get_counts())}
+  end
+
+  def route(%Conv{path: path} = conv) do
+    Counter.bump_count(path)
+    %{conv | status: 404, resp_body: "No #{path} here!"}
+  end
 
   def format_response(%Conv{} = conv) do
     """

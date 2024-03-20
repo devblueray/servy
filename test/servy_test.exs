@@ -3,6 +3,6 @@ defmodule ServyTest do
   doctest Servy
 
   test "the truth" do
-    assert 1+1 == 2
+    assert 1 + 1 == 2
   end
 end
