@@ -40,11 +40,6 @@ defmodule Servy.PledgeServer do
     {:ok, new_state}
   end
 
-  def code_change(_old_vsn, state, _extra) do
-    new_state = Enum.take(state.pledges, state.cache_size - 1)
-    {:ok, new_state}
-  end
-
   def handle_cast(:clear, state) do
     {:noreply, %{state | pledges: []}}
   end
@@ -65,14 +60,16 @@ defmodule Servy.PledgeServer do
   end
 
   def handle_call(:recent_pledges, _from, state) do
-    {:reply, state, state}
+    most_recent_pledges = Enum.take(state.pledges, state.cache_size)
+    new_state = %{state | pledges: most_recent_pledges}
+    {:reply, new_state, state}
   end
 
   def handle_call({:create_pledge, name, amount}, _from, state) do
     {:ok, id = send_pledge_to_service(name, amount)}
-    most_recent_pledges = Enum.take(state.pledges, state.cache_size - 1)
-    cached_pledges = [{name, amount} | most_recent_pledges]
-    new_state = %{state | pledges: cached_pledges}
+    new_pledges  = [{name, amount} | state.pledges]
+    new_state = %{state | pledges: new_pledges}
+    IO.inspect( new_state)
     {:reply, id, new_state}
   end
 
@@ -91,10 +88,7 @@ end
 alias Servy.PledgeServer
 
 {:ok, pid} = Servy.PledgeServer.start()
-# PledgeServer.set_cache_size(4)
-# send pid, {:stop, "hammertime"}
 IO.inspect(PledgeServer.create_pledge("larry", 10))
-# IO.inspect(PledgeServer.clear())
 IO.inspect(PledgeServer.recent_pledges())
 IO.inspect(PledgeServer.create_pledge("moe", 20))
 IO.inspect(PledgeServer.create_pledge("curly", 30))
@@ -103,5 +97,4 @@ IO.inspect(PledgeServer.create_pledge("grace", 50))
 IO.inspect(PledgeServer.recent_pledges())
 PledgeServer.set_cache_size(4)
 IO.inspect(PledgeServer.recent_pledges())
-
-# IO.inspect(PledgeServer.total_pledged())
+IO.inspect(PledgeServer.total_pledged())
