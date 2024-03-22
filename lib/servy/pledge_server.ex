@@ -45,7 +45,8 @@ defmodule Servy.PledgeServer do
   end
 
   def handle_cast({:set_cache_size, size}, state) do
-    new_state = %{state | cache_size: size}
+    resized_cache = Enum.take(state.pledges, size)
+    new_state = %{state | cache_size: size, pledges: resized_cache}
     {:noreply, new_state}
   end
 
@@ -60,9 +61,7 @@ defmodule Servy.PledgeServer do
   end
 
   def handle_call(:recent_pledges, _from, state) do
-    most_recent_pledges = Enum.take(state.pledges, state.cache_size)
-    new_state = %{state | pledges: most_recent_pledges}
-    {:reply, new_state, state}
+    {:reply, state, state}
   end
 
   def handle_call({:create_pledge, name, amount}, _from, state) do
