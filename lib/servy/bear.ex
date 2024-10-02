@@ -3,7 +3,7 @@ defmodule Servy.Bear do
   defstruct id: nil, name: "", type: "", hibernating: false
 
   def is_grizzly(bear) do
-    bear.type == "Grizzly"
+    bear.type == "Grizzly Bear"
   end
 
   def order_asc_by_name(b1, b2) do
