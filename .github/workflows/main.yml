@@ -1,0 +1,61 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  # Job to run JavaScript tests
+  js-tests:
+    runs-on: ubuntu-latest
+    if: always()  # Ensures that the job is considered but controlled by the following steps
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Check for JavaScript file changes
+      id: check_js_changes
+      run: |
+        git fetch origin main
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+        echo "Changed files: $CHANGED_FILES"
+        
+        if echo "$CHANGED_FILES" | grep -q ".*\.js"; then
+          echo "js_changed=true" >> $GITHUB_ENV
+        else
+          echo "js_changed=false" >> $GITHUB_ENV
+        fi
+
+    - name: Run JavaScript tests
+      if: env.js_changed == 'true'
+      run: |
+        echo "Running JavaScript tests..."
+        npm install
+        npm test
+
+  # Job to run Elixir tests
+  elixir-tests:
+    runs-on: ubuntu-latest
+    if: always()  # Ensures that the job is considered but controlled by the following steps
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Check for Elixir file changes
+      id: check_elixir_changes
+      run: |
+        git fetch origin main
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+        echo "Changed files: $CHANGED_FILES"
+        
+        if echo "$CHANGED_FILES" | grep -q ".*\.ex\|.*\.exs"; then
+          echo "elixir_changed=true" >> $GITHUB_ENV
+        else
+          echo "elixir_changed=false" >> $GITHUB_ENV
+        fi
+
+    - name: Run Elixir tests
+      if: env.elixir_changed == 'true'
+      run: |
+        echo "Running Elixir tests..."
+        mix deps.get
+        mix test
+
