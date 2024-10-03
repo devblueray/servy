@@ -11,10 +11,13 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
+    - name: Fetch main branch
+      run: |
+        git fetch origin main
+
     - name: Check for JavaScript file changes
       id: check_js_changes
       run: |
-        git fetch origin main
         CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
         echo "Changed files: $CHANGED_FILES"
         
@@ -39,10 +42,13 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
+    - name: Fetch main branch
+      run: |
+        git fetch origin main
+
     - name: Check for Elixir file changes
       id: check_elixir_changes
       run: |
-        git fetch origin main
         CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
         echo "Changed files: $CHANGED_FILES"
         
