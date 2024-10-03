@@ -1,3 +1,4 @@
+#Bear Controller
 defmodule Servy.Api.BearController do
   def index(conv) do
     json =
